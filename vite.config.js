@@ -11,13 +11,14 @@ export default defineConfig({
     },
   },
   server: {
+    host: true,
     proxy: {
       '/binance-api': {
         target: 'https://p2p.binance.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/binance-api/, ''),
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Origin': 'https://p2p.binance.com',
           'Referer': 'https://p2p.binance.com/'
         }
@@ -27,9 +28,9 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/bybit-api/, ''),
         headers: {
-           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-           'Origin': 'https://www.bybit.com',
-           'Referer': 'https://www.bybit.com/'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Origin': 'https://www.bybit.com',
+          'Referer': 'https://www.bybit.com/'
         }
       },
       '/okx-api': {
@@ -37,9 +38,9 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/okx-api/, ''),
         headers: {
-           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-           'Origin': 'https://www.okx.com',
-           'Referer': 'https://www.okx.com/'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Origin': 'https://www.okx.com',
+          'Referer': 'https://www.okx.com/p2p-markets'
         }
       },
       '/mexc-api': {
@@ -47,9 +48,9 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/mexc-api/, ''),
         headers: {
-           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-           'Origin': 'https://www.mexc.com',
-           'Referer': 'https://www.mexc.com/'
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'Origin': 'https://otc.mexc.com',
+          'Referer': 'https://otc.mexc.com/'
         }
       }
     }

@@ -74,8 +74,17 @@ export const api = {
         const response = await fetch('/binance-api/bapi/c2c/v2/friendly/c2c/adv/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            fiat: 'UAH', page: 1, rows: 20, tradeType, asset: crypto, countries: [], proMerchantAds: false, shieldMerchantAds: false, publisherType: null, payTypes: []
+          body: JSON.stringify({ 
+            fiat: 'UAH', 
+            page: 1, 
+            rows: 20, 
+            tradeType: tradeType, 
+            asset: crypto, 
+            countries: [], 
+            proMerchantAds: false, 
+            shieldMerchantAds: false, 
+            publisherType: null,
+            payTypes: [] // Empty means all
           })
         });
 
@@ -85,14 +94,14 @@ export const api = {
             return result.data.map(item => ({
               id: item.adv.advNo,
               type: item.adv.tradeType.toLowerCase(),
-              merchant: {
-                id: item.advertiser.userNo,
-                name: item.advertiser.nickName,
-                verified: item.advertiser.userType === 'merchant',
-                orders: item.advertiser.monthOrderCount,
-                completion: (item.advertiser.monthFinishRate * 100).toFixed(2),
+              merchant: { 
+                id: item.advertiser.userNo, 
+                name: item.advertiser.nickName, 
+                verified: item.advertiser.userType === 'merchant', 
+                orders: item.advertiser.monthOrderCount, 
+                completion: (item.advertiser.monthFinishRate * 100).toFixed(2), 
                 avgTime: '5 min', 
-                positive: (item.advertiser.positiveRate * 100).toFixed(0) + '%'
+                positive: (item.advertiser.positiveRate * 100).toFixed(0) + '%' 
               },
               price: item.adv.price,
               crypto: item.adv.asset,
@@ -107,11 +116,21 @@ export const api = {
 
       // --- BYBIT ---
       if (exchange === 'Bybit') {
+        // Correct Bybit mapping: 1 for Buy (user buys), 0 for Sell (user sells) - actually Bybit API uses side=1 for Buy
+        // Note: Bybit API side: "1" means user buys from maker (maker sells)
+        const side = tradeType === 'BUY' ? '1' : '0';
+        
         const response = await fetch('/bybit-api/fiat/otc/item/find', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            tokenId: crypto, currencyId: 'UAH', payment: [], side: tradeType === 'BUY' ? '1' : '0', size: '10', page: '1', amount: ''
+          body: JSON.stringify({ 
+            tokenId: crypto, 
+            currencyId: 'UAH', 
+            payment: [], 
+            side: side, 
+            size: '20', 
+            page: '1', 
+            amount: '' 
           })
         });
         
@@ -120,15 +139,15 @@ export const api = {
           if (result.result && result.result.items) {
              return result.result.items.map(item => ({
                 id: item.id,
-                type: item.side === 1 ? 'buy' : 'sell',
-                merchant: {
-                   id: item.userId,
-                   name: item.nickName,
-                   verified: item.isMaker,
-                   orders: item.recentOrderNum,
-                   completion: item.recentExecuteRate + '%',
-                   avgTime: '2 min',
-                   positive: '98%' 
+                type: type, // keep requested type
+                merchant: { 
+                  id: item.userId, 
+                  name: item.nickName, 
+                  verified: item.isMaker, 
+                  orders: item.recentOrderNum, 
+                  completion: item.recentExecuteRate + '%', 
+                  avgTime: '2 min', 
+                  positive: '98%' 
                 },
                 price: item.price,
                 crypto: crypto,
@@ -142,28 +161,89 @@ export const api = {
       }
 
       // --- OKX ---
-      // Note: OKX API is often strictly protected. This is a best-effort attempt.
       if (exchange === 'OKX') {
-         // Mocking OKX for now as their public API requires complex signing or is heavily protected against scraping
-         // Fallback to mock data for OKX but with "Real-like" values
+         // OKX Public API for P2P is very strict. We try best effort.
+         // If blocked, we fall back to mock to keep UI alive.
+         try {
+            const side = tradeType === 'BUY' ? 'sell' : 'buy'; // OKX: 'sell' means maker sells (user buys)
+            const response = await fetch(`/okx-api/v3/c2c/tradingOrders/books?t=${Date.now()}&quoteCurrency=UAH&baseCurrency=${crypto}&side=${side}&paymentMethod=all&userType=all&showTrade=false&showFollow=false&showAlreadyTraded=false&isShowHide=false&urlId=1`, {
+              method: 'GET',
+              headers: { 
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+              }
+            });
+            
+            if (response.ok) {
+               const result = await response.json();
+               if (result.data && result.data.sell) { // OKX structure varies
+                   const list = tradeType === 'BUY' ? result.data.sell : result.data.buy;
+                   if (list) {
+                     return list.map(item => ({
+                       id: item.id,
+                       type: type,
+                       merchant: { id: item.userId, name: item.nickName, verified: item.merchantId !== '', orders: item.completedOrderQuantity, completion: (item.completionRate * 100).toFixed(1), avgTime: '5m', positive: '98%' },
+                       price: item.price,
+                       crypto: crypto,
+                       fiat: 'UAH',
+                       limit: `${item.quoteMinAmountPerOrder} - ${item.quoteMaxAmountPerOrder}`,
+                       paymentMethods: item.paymentMethods,
+                       exchange: 'OKX'
+                     }));
+                   }
+               }
+            }
+         } catch (e) {
+            console.warn("OKX API blocked/failed, using high-quality mock", e);
+         }
+         
+         // Fallback OKX Mock if API fails
          await delay(400);
          return MOCK_ORDERS.filter(o => o.exchange === 'OKX').concat([
-             {
-                id: 'okx-real-1', type: type, merchant: { id: 'okx1', name: 'OKX_Trader_Pro', verified: true, orders: 3400, completion: 99.1, avgTime: '1m', positive: '99%' },
-                price: type === 'buy' ? '41.20' : '40.90', crypto, fiat: 'UAH', limit: '1000 - 50000', paymentMethods: ['Monobank'], exchange: 'OKX'
-             }
+             { id: 'okx-real-1', type: type, merchant: { id: 'okx1', name: 'OKX_Trader_Pro', verified: true, orders: 3400, completion: 99.1, avgTime: '1m', positive: '99%' }, price: type === 'buy' ? '41.20' : '40.90', crypto, fiat: 'UAH', limit: '1000 - 50000', paymentMethods: ['Monobank'], exchange: 'OKX' }
          ]);
       }
       
       // --- MEXC ---
       if (exchange === 'MEXC') {
-         // Similar to OKX, MEXC often requires specific headers/cookies.
+         try {
+           const tradeTypeParam = tradeType === 'BUY' ? 'SELL' : 'BUY'; // MEXC: SELL means maker sells
+           const response = await fetch('/mexc-api/api/v1/market/ads', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                 "coinName": crypto,
+                 "currency": "UAH",
+                 "tradeType": tradeTypeParam,
+                 "page": 1,
+                 "rows": 20,
+                 "payMethod": null
+              })
+           });
+           
+           if (response.ok) {
+              const result = await response.json();
+              if (result.data) {
+                 return result.data.map(item => ({
+                    id: item.adId,
+                    type: type,
+                    merchant: { id: item.uid, name: item.nickName, verified: item.merchant === 1, orders: item.orderCount, completion: (item.finishRate * 100).toFixed(0), avgTime: '10m', positive: '95%' },
+                    price: item.price,
+                    crypto: crypto,
+                    fiat: 'UAH',
+                    limit: `${item.minLimit} - ${item.maxLimit}`,
+                    paymentMethods: item.payMethodName ? item.payMethodName.split(',') : ['Bank Transfer'],
+                    exchange: 'MEXC'
+                 }));
+              }
+           }
+         } catch (e) {
+            console.warn("MEXC API blocked/failed", e);
+         }
+
          await delay(400);
           return MOCK_ORDERS.filter(o => o.exchange === 'MEXC').concat([
-             {
-                id: 'mexc-real-1', type: type, merchant: { id: 'mexc1', name: 'MexcMaster', verified: false, orders: 120, completion: 95.5, avgTime: '10m', positive: '92%' },
-                price: type === 'buy' ? '41.50' : '40.50', crypto, fiat: 'UAH', limit: '500 - 20000', paymentMethods: ['PrivatBank'], exchange: 'MEXC'
-             }
+             { id: 'mexc-real-1', type: type, merchant: { id: 'mexc1', name: 'MexcMaster', verified: false, orders: 120, completion: 95.5, avgTime: '10m', positive: '92%' }, price: type === 'buy' ? '41.50' : '40.50', crypto, fiat: 'UAH', limit: '500 - 20000', paymentMethods: ['PrivatBank'], exchange: 'MEXC' }
          ]);
       }
 
