@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, RefreshCw, Filter } from 'lucide-react';
 import OrderCard from './OrderCard';
+import MerchantProfileModal from './MerchantProfileModal';
 
 const EXCHANGES = ['Binance', 'Bybit', 'OKX', 'MEXC'];
 const CRYPTOS = ['USDT', 'USDC', 'BTC', 'ETH', 'BNB'];
@@ -51,6 +52,7 @@ const MOCK_ORDERS = [
 const MarketScreen = () => {
   const [activeTab, setActiveTab] = useState('buy'); // buy | sell
   const [activeCrypto, setActiveCrypto] = useState('USDT');
+  const [selectedMerchant, setSelectedMerchant] = useState(null);
 
   return (
     <div className="pt-2 px-4 pb-4">
@@ -117,9 +119,20 @@ const MarketScreen = () => {
       {/* Orders List */}
       <div className="space-y-1">
         {MOCK_ORDERS.map(order => (
-          <OrderCard key={order.id} order={order} />
+          <OrderCard 
+            key={order.id} 
+            order={order} 
+            onClick={(order) => setSelectedMerchant(order.merchant)}
+          />
         ))}
       </div>
+
+      {/* Merchant Modal */}
+      <MerchantProfileModal 
+        isOpen={!!selectedMerchant}
+        merchant={selectedMerchant}
+        onClose={() => setSelectedMerchant(null)}
+      />
     </div>
   );
 };

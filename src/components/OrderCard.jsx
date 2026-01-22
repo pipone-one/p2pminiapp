@@ -1,13 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-const OrderCard = ({ order }) => {
+const OrderCard = ({ order, onClick }) => {
   const { merchant, price, limit, crypto, fiat, paymentMethods } = order;
 
   return (
     <motion.div
       whileTap={{ scale: 0.98 }}
-      className="py-4 border-b border-white/5"
+      onClick={() => onClick(order)}
+      className="py-4 border-b border-white/5 cursor-pointer"
     >
       <div className="flex justify-between items-start mb-2">
         {/* Left: Price */}
