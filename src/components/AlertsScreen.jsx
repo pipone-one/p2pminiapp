@@ -1,13 +1,54 @@
-import React, { useState } from 'react';
-import { Plus, Search, X, ChevronDown, Bell } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Search, X, ChevronDown, Bell, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { api } from '../services/api';
+import { hapticFeedback } from '../utils/telegram';
 
 const AlertsScreen = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [alerts, setAlerts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Form State
+  const [pair, setPair] = useState('USDT/UAH');
+  const [price, setPrice] = useState('');
+  const [exchange, setExchange] = useState('Binance');
+
+  useEffect(() => {
+    loadAlerts();
+  }, []);
+
+  const loadAlerts = async () => {
+    setLoading(true);
+    const data = await api.getAlerts();
+    setAlerts(data);
+    setLoading(false);
+  };
+
+  const handleCreateAlert = async () => {
+    if (!price) return;
+    
+    hapticFeedback('medium');
+    const newAlert = await api.createAlert({
+      pair,
+      price,
+      exchange,
+      type: 'buy'
+    });
+    
+    setAlerts([...alerts, newAlert]);
+    setIsModalOpen(false);
+    setPrice('');
+  };
+
+  const handleDelete = async (id) => {
+    hapticFeedback('medium');
+    await api.deleteAlert(id);
+    setAlerts(alerts.filter(a => a.id !== id));
+  };
 
   return (
-    <div className="pt-6 px-4 h-full relative">
+    <div className="pt-6 px-4 h-full relative pb-20">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Watchlist</h1>
@@ -19,20 +60,42 @@ const AlertsScreen = () => {
         </button>
       </div>
 
-      {/* Empty State */}
+      {/* List or Empty State */}
       {alerts.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-32 text-center">
           <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center mb-4">
              <Search size={32} className="text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium mb-1">Ничего не найдено</h3>
+          <h3 className="text-lg font-medium mb-1">No active alerts</h3>
           <p className="text-sm text-gray-500 max-w-[200px]">
-            Нажмите '+' для получения уведомлений об изменении цены.
+            Tap '+' to create a new price alert for P2P market.
           </p>
         </div>
       ) : (
         <div className="space-y-3">
-           {/* Render alerts here */}
+           {alerts.map(alert => (
+             <motion.div 
+               layout
+               initial={{ opacity: 0, y: 20 }}
+               animate={{ opacity: 1, y: 0 }}
+               key={alert.id} 
+               className="bg-surface border border-white/5 p-4 rounded-2xl flex justify-between items-center"
+             >
+               <div>
+                 <div className="flex items-center gap-2 mb-1">
+                   <span className="font-bold text-white">{alert.pair}</span>
+                   <span className="text-xs px-2 py-0.5 rounded bg-white/10 text-gray-300">{alert.exchange}</span>
+                 </div>
+                 <div className="text-sm text-gray-400">Target: <span className="text-soft-gold font-bold">{alert.price}</span></div>
+               </div>
+               <div className="flex items-center gap-3">
+                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                 <button onClick={() => handleDelete(alert.id)} className="text-gray-500 hover:text-red-500 transition-colors">
+                   <Trash2 size={18} />
+                 </button>
+               </div>
+             </motion.div>
+           ))}
         </div>
       )}
 
@@ -55,12 +118,12 @@ const AlertsScreen = () => {
               className="fixed bottom-0 left-0 right-0 bg-[#0A0A0C] border-t border-white/10 rounded-t-[32px] z-50 p-6 pb-10 h-[85vh] overflow-y-auto"
             >
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Новое уведомление</h2>
+                <h2 className="text-2xl font-bold">New Alert</h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-1.5 rounded-full bg-white/5 text-sm text-soft-gold hover:bg-white/10"
                 >
-                  Закрыть
+                  Close
                 </button>
               </div>
 
@@ -68,16 +131,16 @@ const AlertsScreen = () => {
               <div className="space-y-6">
                 {/* Buy/Sell Selector */}
                 <div>
-                   <label className="text-sm text-gray-400 block mb-2">Я хочу</label>
+                   <label className="text-sm text-gray-400 block mb-2">I want to</label>
                    <div className="flex gap-4">
-                     <button className="text-lg font-bold text-white border-b-2 border-white pb-1">Купить</button>
-                     <button className="text-lg font-bold text-gray-500 pb-1">Продать</button>
+                     <button className="text-lg font-bold text-white border-b-2 border-white pb-1">Buy</button>
+                     <button className="text-lg font-bold text-gray-500 pb-1">Sell</button>
                    </div>
                 </div>
 
                 {/* Pair */}
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">Выберите пару:</label>
+                  <label className="text-sm text-gray-400 block mb-2">Pair</label>
                   <div className="flex items-center gap-2 text-xl font-medium text-soft-gold">
                     UAH <div className="p-1 rounded-full border border-soft-gold"><ChevronDown size={12}/></div> 
                     <span className="text-white">⇆</span>
@@ -87,59 +150,31 @@ const AlertsScreen = () => {
 
                 {/* Market */}
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">Выберите рынок:</label>
+                  <label className="text-sm text-gray-400 block mb-2">Exchange</label>
                   <div className="text-xl font-medium text-soft-gold flex items-center gap-2">
-                    Binance <div className="p-1 rounded-full border border-soft-gold"><ChevronDown size={12}/></div>
+                    {exchange} <div className="p-1 rounded-full border border-soft-gold"><ChevronDown size={12}/></div>
                   </div>
                 </div>
 
-                {/* Payment Method */}
+                {/* Price Input */}
                 <div>
-                  <label className="text-sm text-gray-400 block mb-2">Выберите способы оплаты:</label>
-                  <div className="text-xl font-medium text-white flex items-center gap-2">
-                    Любой <div className="p-1 rounded-full border border-white/30"><ChevronDown size={12}/></div>
-                  </div>
+                  <label className="text-sm text-gray-400 block mb-2">Target Price</label>
+                  <input 
+                    type="number" 
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    placeholder="40.50"
+                    className="w-full bg-surface border border-white/10 rounded-xl p-4 text-2xl font-bold text-white focus:border-shark-cyan focus:outline-none"
+                  />
                 </div>
 
-                {/* Inputs Row */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs text-gray-400 block mb-2">Минимальная сумма:</label>
-                    <input 
-                      type="text" 
-                      placeholder="Сумма (необязате..." 
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-soft-gold/50"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-gray-400 block mb-2">Граничная цена:</label>
-                    <input 
-                      type="text" 
-                      placeholder="Цена" 
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-soft-gold/50"
-                    />
-                  </div>
-                </div>
-
-                {/* Toggle */}
-                <div className="flex justify-between items-center py-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-white">Повторное оповещение</span>
-                    <Bell size={14} className="text-soft-gold" />
-                  </div>
-                  <div className="w-12 h-7 bg-white/20 rounded-full relative">
-                    <div className="absolute left-1 top-1 w-5 h-5 bg-white rounded-full shadow-md" />
-                  </div>
-                </div>
-
-                {/* Submit Button */}
                 <button 
-                  onClick={() => setIsModalOpen(false)}
-                  className="w-full py-4 bg-soft-gold text-black font-bold rounded-xl text-lg hover:bg-yellow-400 transition-colors mt-4"
+                  onClick={handleCreateAlert}
+                  disabled={!price}
+                  className="w-full py-4 bg-shark-cyan text-black font-bold rounded-xl text-lg hover:bg-cyan-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Подтвердить
+                  Create Alert
                 </button>
-
               </div>
             </motion.div>
           </>
