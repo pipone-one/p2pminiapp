@@ -3,6 +3,7 @@ import MarketScreen from './components/MarketScreen';
 import AlertsScreen from './components/AlertsScreen';
 import SettingsScreen from './components/SettingsScreen';
 import AnalyticsScreen from './components/AnalyticsScreen';
+import MerchantScreen from './components/MerchantScreen';
 import Navigation from './components/Navigation';
 
 function App() {
@@ -16,6 +17,8 @@ function App() {
         return <AlertsScreen />;
       case 'Analytics':
         return <AnalyticsScreen />;
+      case 'Merchant':
+        return <MerchantScreen />;
       case 'Settings':
         return <SettingsScreen />;
       default:

@@ -21,6 +21,7 @@ const Navigation = ({ activeTab, onTabChange }) => {
       <NavItem icon={Home} label="Market" id="Market" activeTab={activeTab} onTabChange={onTabChange} />
       <NavItem icon={Bell} label="Watchlist" id="Alerts" activeTab={activeTab} onTabChange={onTabChange} />
       <NavItem icon={BarChart3} label="History" id="Analytics" activeTab={activeTab} onTabChange={onTabChange} />
+      <NavItem icon={User} label="Profile" id="Merchant" activeTab={activeTab} onTabChange={onTabChange} />
       <NavItem icon={Settings} label="Settings" id="Settings" activeTab={activeTab} onTabChange={onTabChange} />
     </div>
   );
