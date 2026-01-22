@@ -22,3 +22,7 @@ export const expandWebApp = () => {
     tg.ready();
   }
 };
+
+export const getUser = () => {
+  return tg?.initDataUnsafe?.user || null;
+};

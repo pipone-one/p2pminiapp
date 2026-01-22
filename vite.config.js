@@ -20,17 +20,16 @@ export default defineConfig({
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Origin': 'https://p2p.binance.com',
-          'Referer': 'https://p2p.binance.com/'
+          'Referer': 'https://p2p.binance.com/en/trade/all-payments/USDT?fiat=UAH'
         }
       },
       '/bybit-api': {
         target: 'https://api2.bybit.com',
         changeOrigin: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/bybit-api/, ''),
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Origin': 'https://www.bybit.com',
-          'Referer': 'https://www.bybit.com/'
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         }
       },
       '/okx-api': {
@@ -40,7 +39,7 @@ export default defineConfig({
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
           'Origin': 'https://www.okx.com',
-          'Referer': 'https://www.okx.com/p2p-markets'
+          'Referer': 'https://www.okx.com/p2p-markets/uah/buy-usdt'
         }
       },
       '/mexc-api': {
@@ -49,8 +48,8 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/mexc-api/, ''),
         headers: {
           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-          'Origin': 'https://otc.mexc.com',
-          'Referer': 'https://otc.mexc.com/'
+          'Origin': 'https://p2p.mexc.com',
+          'Referer': 'https://p2p.mexc.com/'
         }
       }
     }

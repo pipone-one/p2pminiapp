@@ -4,13 +4,16 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        background: "#0A0A0C",
-        surface: "rgba(22, 22, 26, 0.7)",
+        background: "var(--background)",
+        surface: "var(--surface)",
+        text: "var(--text)",
+        border: "var(--border)",
         shark: {
-          cyan: "#00F0FF",
+          cyan: "var(--shark-cyan)",
         },
         soft: {
           gold: "#FFD700",

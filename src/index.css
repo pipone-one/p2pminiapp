@@ -3,7 +3,23 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: #F2F2F7;
+    --surface: #FFFFFF;
+    --text: #000000;
+    --border: #E5E5EA;
+    --shark-cyan: #22c55e;
+  }
+
+  .dark {
+    --background: #000000;
+    --surface: #1A1A1D;
+    --text: #FFFFFF;
+    --border: rgba(255, 255, 255, 0.1);
+    --shark-cyan: #22c55e;
+  }
+
   body {
-    @apply bg-background text-white font-sans antialiased;
+    @apply bg-background text-text font-sans antialiased transition-colors duration-300;
   }
 }
