@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShieldCheck, Star, Clock, ThumbsUp } from 'lucide-react';
+import { X, ShieldCheck, Star, Clock, ThumbsUp, ExternalLink } from 'lucide-react';
+import { openLink } from '../utils/telegram';
 
 const MerchantProfileModal = ({ isOpen, onClose, merchant }) => {
   if (!merchant) return null;
@@ -63,14 +64,14 @@ const MerchantProfileModal = ({ isOpen, onClose, merchant }) => {
                   <Clock size={14} />
                   <span className="text-xs">Avg. Release</span>
                 </div>
-                <div className="text-xl font-bold text-white">2.5 min</div>
+                <div className="text-xl font-bold text-white">{merchant.avgTime || '5 min'}</div>
               </div>
               <div className="bg-surface p-4 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-2 text-gray-400 mb-1">
                   <ThumbsUp size={14} />
                   <span className="text-xs">Positive Feedback</span>
                 </div>
-                <div className="text-xl font-bold text-white">99.8%</div>
+                <div className="text-xl font-bold text-white">{merchant.positive || '98%'}</div>
               </div>
               <div className="bg-surface p-4 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-2 text-gray-400 mb-1">
@@ -93,8 +94,11 @@ const MerchantProfileModal = ({ isOpen, onClose, merchant }) => {
             </div>
 
             {/* Action Button */}
-            <button className="w-full py-4 bg-shark-cyan text-black font-bold rounded-xl text-lg hover:bg-cyan-400 transition-colors">
-              Buy USDT
+            <button 
+              onClick={() => openLink('https://p2p.binance.com')}
+              className="w-full py-4 bg-shark-cyan text-black font-bold rounded-xl text-lg hover:bg-cyan-400 transition-colors flex items-center justify-center gap-2"
+            >
+              Go to Exchange <ExternalLink size={20} />
             </button>
 
           </motion.div>

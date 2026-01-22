@@ -1,10 +1,14 @@
 import React from 'react';
 import { Home, Bell, BarChart3, User, Settings } from 'lucide-react';
 import clsx from 'clsx';
+import { hapticFeedback } from '../utils/telegram';
 
 const NavItem = ({ icon: Icon, label, id, activeTab, onTabChange }) => (
   <button 
-    onClick={() => onTabChange(id)}
+    onClick={() => {
+      onTabChange(id);
+      hapticFeedback('light');
+    }}
     className={clsx(
       "flex flex-col items-center gap-1 p-2 transition-colors",
       activeTab === id ? "text-shark-cyan" : "text-gray-400 hover:text-white"
