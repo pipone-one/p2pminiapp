@@ -20,7 +20,9 @@ const AlertsScreen = () => {
 
   const loadAlerts = async () => {
     setLoading(true);
-    const data = await api.getAlerts();
+    // const data = await api.getAlerts(); // Removed mock call
+    const saved = localStorage.getItem('user_alerts');
+    const data = saved ? JSON.parse(saved) : [];
     setAlerts(data);
     setLoading(false);
   };
@@ -29,22 +31,31 @@ const AlertsScreen = () => {
     if (!price) return;
     
     hapticFeedback('medium');
-    const newAlert = await api.createAlert({
+    
+    // Create new alert object
+    const newAlert = {
+      id: Date.now(),
       pair,
       price,
       exchange,
-      type: 'buy'
-    });
+      type: 'buy',
+      active: true
+    };
     
-    setAlerts([...alerts, newAlert]);
+    const updatedAlerts = [...alerts, newAlert];
+    setAlerts(updatedAlerts);
+    localStorage.setItem('user_alerts', JSON.stringify(updatedAlerts));
+    
     setIsModalOpen(false);
     setPrice('');
   };
 
   const handleDelete = async (id) => {
     hapticFeedback('medium');
-    await api.deleteAlert(id);
-    setAlerts(alerts.filter(a => a.id !== id));
+    // await api.deleteAlert(id); // Removed mock call
+    const updatedAlerts = alerts.filter(a => a.id !== id);
+    setAlerts(updatedAlerts);
+    localStorage.setItem('user_alerts', JSON.stringify(updatedAlerts));
   };
 
   return (

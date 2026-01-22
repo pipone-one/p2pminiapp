@@ -70,10 +70,7 @@ const MarketScreen = () => {
     <div className="pt-2 px-4 pb-20">
       {/* Top Header */}
       <div className="flex justify-between items-center mb-4 pt-2">
-        <button className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/10 text-sm font-medium hover:bg-white/20 transition-colors">
-          {activeExchange} <ChevronDown size={14} />
-        </button>
-        <div className="font-bold text-lg tracking-tight">P2P Market</div>
+        <div className="font-bold text-lg tracking-tight text-white/90">P2P Market</div>
         <button className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-white/10 text-sm font-medium hover:bg-white/20 transition-colors">
           UAH <ChevronDown size={14} />
         </button>
@@ -97,9 +94,9 @@ const MarketScreen = () => {
         </button>
       </div>
 
-      {/* Crypto Tabs */}
+      {/* Crypto Tabs - VISUALLY HIDDEN OTHERS FOR NOW BUT KEPT IN CODE */}
       <div className="flex gap-2 overflow-x-auto pb-2 mb-2 no-scrollbar">
-        {CRYPTOS.map(crypto => (
+        {CRYPTOS.filter(c => c === 'USDT').map(crypto => (
           <button
             key={crypto}
             onClick={() => { setActiveCrypto(crypto); hapticFeedback('light'); }}
@@ -112,6 +109,7 @@ const MarketScreen = () => {
             {crypto}
           </button>
         ))}
+        {/* Hidden others for future: USDC, BTC, ETH... */}
       </div>
 
       {/* Exchange & Filters Row */}
@@ -121,7 +119,7 @@ const MarketScreen = () => {
              <button 
                key={ex}
                onClick={() => { setActiveExchange(ex); hapticFeedback('light'); }}
-               className={`text-xs font-medium px-2 py-1 rounded-lg transition-colors ${activeExchange === ex ? 'text-shark-cyan bg-shark-cyan/10 border border-shark-cyan/20' : 'text-gray-400'}`}
+               className={`text-xs font-medium px-3 py-1.5 rounded-lg transition-colors border ${activeExchange === ex ? 'text-shark-cyan bg-shark-cyan/10 border-shark-cyan/50' : 'text-gray-400 border-transparent bg-white/5 hover:bg-white/10'}`}
              >
                {ex}
              </button>
