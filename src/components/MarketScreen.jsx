@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { ChevronDown, RefreshCw, Filter, Search } from 'lucide-react';
 import OrderCard from './OrderCard';
 import MerchantProfileModal from './MerchantProfileModal';
@@ -46,10 +47,12 @@ const MarketScreen = () => {
   const fetchOrders = async () => {
     setLoading(true);
     try {
-      const data = await api.getOrders({ type: activeTab, crypto: activeCrypto });
-      // Simulate filtering by exchange on client side for now as mock data is limited
-      const filtered = data.filter(o => !o.exchange || o.exchange === activeExchange || activeExchange === 'Binance'); 
-      setOrders(data); // Using all data for demo purposes if specific exchange data is missing
+      const data = await api.getOrders({ 
+        type: activeTab, 
+        crypto: activeCrypto,
+        exchange: activeExchange 
+      });
+      setOrders(data);
     } catch (error) {
       console.error("Failed to fetch orders", error);
     } finally {
@@ -166,6 +169,5 @@ const MarketScreen = () => {
     </div>
   );
 };
-import { motion } from 'framer-motion';
 
 export default MarketScreen;

@@ -199,9 +199,12 @@ export const api = {
          
          // Fallback OKX Mock if API fails
          await delay(400);
-         return MOCK_ORDERS.filter(o => o.exchange === 'OKX').concat([
-             { id: 'okx-real-1', type: type, merchant: { id: 'okx1', name: 'OKX_Trader_Pro', verified: true, orders: 3400, completion: 99.1, avgTime: '1m', positive: '99%' }, price: type === 'buy' ? '41.20' : '40.90', crypto, fiat: 'UAH', limit: '1000 - 50000', paymentMethods: ['Monobank'], exchange: 'OKX' }
-         ]);
+         return [
+             { id: 'okx-real-1', type: type, merchant: { id: 'okx1', name: 'OKX_Trader_Pro', verified: true, orders: 3400, completion: 99.1, avgTime: '1m', positive: '99%' }, price: type === 'buy' ? '41.20' : '40.90', crypto, fiat: 'UAH', limit: '1000 - 50000', paymentMethods: ['Monobank'], exchange: 'OKX' },
+             { id: 'okx-real-2', type: type, merchant: { id: 'okx2', name: 'FastCrypto_UA', verified: false, orders: 850, completion: 97.5, avgTime: '5m', positive: '96%' }, price: type === 'buy' ? '41.25' : '40.85', crypto, fiat: 'UAH', limit: '500 - 20000', paymentMethods: ['PrivatBank', 'Monobank'], exchange: 'OKX' },
+             { id: 'okx-real-3', type: type, merchant: { id: 'okx3', name: 'SecureDeal', verified: true, orders: 12000, completion: 99.9, avgTime: '2m', positive: '100%' }, price: type === 'buy' ? '41.30' : '40.80', crypto, fiat: 'UAH', limit: '5000 - 100000', paymentMethods: ['PUMB', 'Wise'], exchange: 'OKX' },
+             { id: 'okx-real-4', type: type, merchant: { id: 'okx4', name: 'AlexTrade', verified: false, orders: 320, completion: 92.0, avgTime: '15m', positive: '90%' }, price: type === 'buy' ? '41.40' : '40.70', crypto, fiat: 'UAH', limit: '100 - 5000', paymentMethods: ['Izibank'], exchange: 'OKX' }
+         ];
       }
       
       // --- MEXC ---
@@ -242,10 +245,12 @@ export const api = {
          }
 
          await delay(400);
-          return MOCK_ORDERS.filter(o => o.exchange === 'MEXC').concat([
-             { id: 'mexc-real-1', type: type, merchant: { id: 'mexc1', name: 'MexcMaster', verified: false, orders: 120, completion: 95.5, avgTime: '10m', positive: '92%' }, price: type === 'buy' ? '41.50' : '40.50', crypto, fiat: 'UAH', limit: '500 - 20000', paymentMethods: ['PrivatBank'], exchange: 'MEXC' }
-         ]);
-      }
+          return [
+             { id: 'mexc-real-1', type: type, merchant: { id: 'mexc1', name: 'MexcMaster', verified: false, orders: 120, completion: 95.5, avgTime: '10m', positive: '92%' }, price: type === 'buy' ? '41.50' : '40.50', crypto, fiat: 'UAH', limit: '500 - 20000', paymentMethods: ['PrivatBank'], exchange: 'MEXC' },
+             { id: 'mexc-real-2', type: type, merchant: { id: 'mexc2', name: 'GlobalTrader', verified: true, orders: 4500, completion: 98.0, avgTime: '3m', positive: '97%' }, price: type === 'buy' ? '41.55' : '40.45', crypto, fiat: 'UAH', limit: '1000 - 50000', paymentMethods: ['Monobank', 'Abank'], exchange: 'MEXC' },
+             { id: 'mexc-real-3', type: type, merchant: { id: 'mexc3', name: 'CryptoFlow', verified: false, orders: 50, completion: 89.0, avgTime: '20m', positive: '85%' }, price: type === 'buy' ? '41.60' : '40.40', crypto, fiat: 'UAH', limit: '200 - 5000', paymentMethods: ['PUMB'], exchange: 'MEXC' }
+          ];
+       }
 
     } catch (error) {
       console.error("Failed to fetch real data, falling back to mock", error);
