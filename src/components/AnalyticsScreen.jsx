@@ -63,7 +63,7 @@ const AnalyticsScreen = ({ theme, t }) => {
       </div>
 
       {/* Spread Card */}
-      <div className="bg-surface backdrop-blur-md border border-border rounded-2xl p-4 mb-4 shadow-sm">
+      <div className="glass-card rounded-2xl p-4 mb-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold flex items-center gap-2">
             <TrendingUp size={20} className="text-shark-cyan" />
@@ -77,23 +77,23 @@ const AnalyticsScreen = ({ theme, t }) => {
         
         <div className="space-y-3">
           {loading ? (
-            <div className="text-center py-4 text-gray-500">{t('analytics.scanning')}</div>
+            <div className="text-center py-8 text-text-secondary animate-pulse">{t('analytics.scanning')}</div>
           ) : filteredSpreads.length > 0 ? (
             filteredSpreads.map(spread => (
-              <div key={spread.id} className="flex justify-between items-center p-3 bg-gray-50 dark:bg-white/5 rounded-xl border border-border">
+              <div key={spread.id} className="flex justify-between items-center p-3 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 transition-colors">
                 <div>
-                  <div className="flex items-center gap-2 text-sm font-bold mb-1">
+                  <div className="flex items-center gap-2 text-sm font-black mb-1">
                     <span style={{ color: EXCHANGE_STYLES[spread.buyExchange]?.color || 'var(--text)' }}>{spread.buyExchange}</span>
-                    <ArrowUpRight size={14} className="text-gray-500" />
+                    <ArrowUpRight size={14} className="text-text-secondary" />
                     <span style={{ color: EXCHANGE_STYLES[spread.sellExchange]?.color || 'var(--text)' }}>{spread.sellExchange}</span>
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-text-secondary font-medium">
                      <span className="text-green-500">{t('market.buy')}:</span> {spread.buyPrice} • <span className="text-red-500">{t('market.sell')}:</span> {spread.sellPrice}
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-soft-gold font-bold text-lg">{spread.profit}</div>
-                  <div className="text-[10px] text-gray-500 uppercase">{spread.pair}</div>
+                  <div className="text-shark-cyan font-black text-xl drop-shadow-[0_0_8px_rgba(0,229,106,0.3)]">{spread.profit}</div>
+                  <div className="text-[10px] text-text-secondary uppercase font-bold tracking-wider">{spread.pair}</div>
                 </div>
               </div>
             ))

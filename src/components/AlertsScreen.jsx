@@ -133,68 +133,74 @@ const AlertsScreen = ({ theme, t }) => {
   };
 
   return (
-    <div className="pt-6 px-4 h-full relative pb-20">
+    <div className="pt-8 px-4 h-full relative pb-24 min-h-screen">
       {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold">{t('alerts.title')}</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-black tracking-tight">{t('alerts.title')}</h1>
         <button 
           onClick={() => { setIsModalOpen(true); hapticFeedback('light'); }}
-          className="w-10 h-10 rounded-full bg-surface border border-border flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/20 transition-colors"
+          className="w-12 h-12 rounded-2xl bg-shark-cyan text-black flex items-center justify-center hover:bg-shark-cyan/90 transition-all shadow-lg shadow-shark-cyan/20 active:scale-95"
         >
-          <Plus size={24} />
+          <Plus size={24} strokeWidth={2.5} />
         </button>
       </div>
 
       {/* List or Empty State */}
       {alerts.length === 0 ? (
         <div className="flex flex-col items-center justify-center mt-32 text-center">
-          <div className="w-16 h-16 rounded-2xl bg-surface border border-border flex items-center justify-center mb-4">
-             <Bell size={32} className="text-gray-400" />
+          <div className="w-20 h-20 rounded-[24px] bg-surface border border-border flex items-center justify-center mb-6 shadow-xl shadow-black/5 relative overflow-hidden">
+             <div className="absolute inset-0 bg-gradient-to-br from-shark-cyan/5 to-transparent" />
+             <Bell size={32} className="text-text-secondary relative z-10" />
           </div>
-          <h3 className="text-lg font-medium mb-1">{t('alerts.no_alerts')}</h3>
-          <p className="text-sm text-gray-500 max-w-[200px]">
+          <h3 className="text-xl font-bold mb-2">{t('alerts.no_alerts')}</h3>
+          <p className="text-sm text-text-secondary font-medium max-w-[240px] leading-relaxed">
             {t('alerts.create_hint')}
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
            {alerts.map(alert => (
              <motion.div 
                layout
                initial={{ opacity: 0, y: 20 }}
                animate={{ opacity: 1, y: 0 }}
                key={alert.id} 
-               className="bg-surface border border-border p-4 rounded-2xl relative overflow-hidden shadow-sm"
+               className="glass-card p-5 rounded-[24px] relative overflow-hidden group"
              >
-               <div className="flex justify-between items-start mb-2">
-                 <div className="flex items-center gap-2">
-                   <span className={`text-sm font-bold uppercase ${alert.type === 'buy' ? 'text-green-500' : 'text-red-500'}`}>
+               <div className="absolute inset-0 bg-gradient-to-r from-shark-cyan/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+               <div className="flex justify-between items-start mb-4 relative z-10">
+                 <div className="flex items-center gap-3">
+                   <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${alert.type === 'buy' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
                      {alert.type === 'buy' ? t('alerts.buy') : t('alerts.sell')}
                    </span>
-                   <span className="text-sm font-bold text-text">{alert.pair}</span>
+                   <span className="text-base font-black text-text tracking-tight">{alert.pair}</span>
                  </div>
-                 <div className="flex items-center gap-2">
-                   <div className={`w-2 h-2 rounded-full ${alert.active ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
-                   <button onClick={() => handleDelete(alert.id)} className="text-gray-500 hover:text-red-500">
-                     <Trash2 size={16} />
+                 <div className="flex items-center gap-3">
+                   <div className={`w-2.5 h-2.5 rounded-full ring-2 ring-white/10 ${alert.active ? 'bg-shark-cyan animate-pulse shadow-[0_0_8px_rgba(0,229,106,0.5)]' : 'bg-text-secondary'}`} />
+                   <button onClick={() => handleDelete(alert.id)} className="text-text-secondary hover:text-error transition-colors p-1">
+                     <Trash2 size={18} />
                    </button>
                  </div>
                </div>
                
-               <div className="flex justify-between items-end">
+               <div className="flex justify-between items-end relative z-10">
                  <div>
-                   <div className="text-xs text-gray-400 mb-0.5">{alert.exchange} • {alert.paymentMethod === 'Any' ? t('alerts.any_payment') : alert.paymentMethod}</div>
-                   <div className="text-2xl font-bold" style={{ color: EXCHANGE_STYLES[alert.exchange]?.color || 'var(--text)' }}>
-                     {alert.price} ₴
+                   <div className="text-xs text-text-secondary font-bold mb-1 flex items-center gap-1.5">
+                     <span style={{ color: EXCHANGE_STYLES[alert.exchange]?.color }}>{alert.exchange}</span>
+                     <span className="w-1 h-1 rounded-full bg-border" />
+                     <span>{alert.paymentMethod === 'Any' ? t('alerts.any_payment') : alert.paymentMethod}</span>
+                   </div>
+                   <div className="text-3xl font-black tracking-tighter drop-shadow-sm" style={{ color: EXCHANGE_STYLES[alert.exchange]?.color || 'var(--text)' }}>
+                     {alert.price} <span className="text-lg text-text-secondary font-bold">₴</span>
                    </div>
                    {!alert.active && alert.matchedPrice && (
-                     <div className="flex items-center gap-2 mt-1">
-                       <span className="text-xs font-bold text-[#FCD535] animate-pulse">
+                     <div className="flex items-center gap-2 mt-2">
+                       <span className="text-xs font-bold text-[#FCD535] animate-pulse bg-[#FCD535]/10 px-2 py-0.5 rounded-md border border-[#FCD535]/20">
                          {t('alerts.triggered_at')} {alert.matchedPrice} ₴
                        </span>
                        <button 
                          onClick={() => handleReactivate(alert.id)}
-                         className="px-2 py-0.5 rounded-full bg-surface border border-border text-[10px] font-bold text-text hover:bg-gray-100 dark:hover:bg-white/10"
+                         className="px-3 py-1 rounded-full bg-surface border border-border text-[10px] font-bold text-text hover:bg-white/10 transition-colors shadow-sm"
                        >
                          {t('alerts.reactivate')}
                        </button>
@@ -202,7 +208,7 @@ const AlertsScreen = ({ theme, t }) => {
                    )}
                  </div>
                  {alert.minAmount !== 'Any' && (
-                   <div className="text-xs text-gray-500 font-medium bg-gray-100 dark:bg-white/5 px-2 py-1 rounded-md">
+                   <div className="text-[10px] font-bold text-text-secondary bg-surface border border-border px-2.5 py-1.5 rounded-lg uppercase tracking-wide">
                      Min: {alert.minAmount}
                    </div>
                  )}
@@ -220,7 +226,7 @@ const AlertsScreen = ({ theme, t }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100]"
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100]"
               onClick={() => setIsModalOpen(false)}
             />
             <motion.div
@@ -228,33 +234,33 @@ const AlertsScreen = ({ theme, t }) => {
               animate={{ y: 0 }}
               exit={{ y: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className="fixed bottom-0 left-0 right-0 bg-background border-t border-border rounded-t-[32px] z-[101] px-5 pt-5 pb-8 h-auto max-h-[90vh] overflow-y-auto"
+              className="fixed bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-xl border-t border-border rounded-t-[32px] z-[101] px-6 pt-6 pb-10 h-auto max-h-[90vh] overflow-y-auto shadow-2xl"
             >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-text">{t('alerts.create_modal')}</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-black text-text tracking-tight">{t('alerts.create_modal')}</h2>
                 <button 
                   onClick={() => setIsModalOpen(false)}
-                  className="px-3 py-1 rounded-full bg-surface text-[10px] font-bold text-[#FCD535] border border-[#FCD535]/20"
+                  className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-text-secondary hover:text-text transition-colors"
                 >
-                  {t('common.close')}
+                  <X size={18} strokeWidth={2.5} />
                 </button>
               </div>
 
               {/* Form */}
-              <div className="space-y-4">
+              <div className="space-y-5">
                 
                 {/* Type Selector */}
                 <div>
-                   <div className="flex gap-2 bg-surface p-1 rounded-xl border border-border">
+                   <div className="flex gap-2 bg-black/5 dark:bg-white/5 p-1.5 rounded-2xl border border-transparent">
                      <button 
                        onClick={() => setType('buy')}
-                       className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${type === 'buy' ? 'bg-green-500 text-black shadow-lg' : 'text-gray-500 hover:text-text hover:bg-gray-100 dark:hover:bg-white/5'}`}
+                       className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${type === 'buy' ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'text-text-secondary hover:text-text'}`}
                      >
                        {t('alerts.buy')}
                      </button>
                      <button 
                        onClick={() => setType('sell')}
-                       className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${type === 'sell' ? 'bg-red-500 text-black shadow-lg' : 'text-gray-500 hover:text-text hover:bg-gray-100 dark:hover:bg-white/5'}`}
+                       className={`flex-1 py-3 rounded-xl text-xs font-black uppercase tracking-wider transition-all ${type === 'sell' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-text-secondary hover:text-text'}`}
                      >
                        {t('alerts.sell')}
                      </button>
@@ -263,16 +269,16 @@ const AlertsScreen = ({ theme, t }) => {
 
                 {/* Pair */}
                 <div>
-                  <div className="flex items-center justify-between bg-surface border border-border rounded-xl p-2">
-                    <span className="text-xs text-gray-500 font-medium pl-1">{t('alerts.pair')}:</span>
-                    <div className="flex items-center gap-2">
-                      <button onClick={swapPair} className="flex items-center gap-1 text-sm font-bold text-text">
+                  <div className="flex items-center justify-between bg-surface border border-border rounded-2xl p-3 shadow-sm">
+                    <span className="text-xs text-text-secondary font-bold uppercase tracking-wider pl-1">{t('alerts.pair')}</span>
+                    <div className="flex items-center gap-3">
+                      <button onClick={swapPair} className="flex items-center gap-1 text-base font-black text-text">
                         {fiat}
                       </button>
-                      <button onClick={swapPair} className="p-1.5 rounded-full bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 active:rotate-180 transition-transform">
-                         <ArrowRightLeft size={12} className="text-gray-400" />
+                      <button onClick={swapPair} className="p-2 rounded-full bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 active:rotate-180 transition-all text-text-secondary">
+                         <ArrowRightLeft size={14} strokeWidth={2.5} />
                       </button>
-                      <button onClick={swapPair} className="flex items-center gap-1 text-sm font-bold text-text">
+                      <button onClick={swapPair} className="flex items-center gap-1 text-base font-black text-text">
                         {crypto}
                       </button>
                     </div>
@@ -286,25 +292,25 @@ const AlertsScreen = ({ theme, t }) => {
                       setShowExchangeDropdown(!showExchangeDropdown);
                       setShowPaymentDropdown(false);
                     }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl border border-border bg-surface"
-                    style={{ borderColor: EXCHANGE_STYLES[exchange]?.color }}
+                    className="w-full flex items-center justify-between p-4 rounded-2xl border border-border bg-surface shadow-sm active:scale-[0.99] transition-transform"
+                    style={{ borderColor: showExchangeDropdown ? EXCHANGE_STYLES[exchange]?.color : 'var(--border)' }}
                   >
-                    <span className="text-xs text-gray-500 font-medium">{t('alerts.market_label')}:</span>
+                    <span className="text-xs text-text-secondary font-bold uppercase tracking-wider">{t('alerts.market_label')}</span>
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold" style={{ color: EXCHANGE_STYLES[exchange]?.color }}>
+                      <span className="text-base font-black" style={{ color: EXCHANGE_STYLES[exchange]?.color }}>
                         {exchange}
                       </span>
-                      <ChevronDown size={16} className={`transition-transform duration-300 ${showExchangeDropdown ? 'rotate-180' : ''}`} style={{ color: EXCHANGE_STYLES[exchange]?.color }} />
+                      <ChevronDown size={18} className={`transition-transform duration-300 ${showExchangeDropdown ? 'rotate-180' : ''}`} style={{ color: EXCHANGE_STYLES[exchange]?.color }} />
                     </div>
                   </button>
                   
                   <AnimatePresence>
                     {showExchangeDropdown && (
                       <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-xl overflow-hidden z-20 shadow-xl"
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-surface/95 backdrop-blur-xl border border-border rounded-2xl overflow-hidden z-20 shadow-2xl origin-top"
                       >
                         {EXCHANGES.map((ex) => (
                           <button
@@ -314,10 +320,10 @@ const AlertsScreen = ({ theme, t }) => {
                               setShowExchangeDropdown(false);
                               hapticFeedback('selection');
                             }}
-                            className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors border-b border-border last:border-0"
+                            className="w-full flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-border/50 last:border-0"
                           >
                             <span className="font-bold text-sm" style={{ color: EXCHANGE_STYLES[ex].color }}>{ex}</span>
-                            {exchange === ex && <Check size={14} style={{ color: EXCHANGE_STYLES[ex].color }} />}
+                            {exchange === ex && <Check size={16} style={{ color: EXCHANGE_STYLES[ex].color }} strokeWidth={3} />}
                           </button>
                         ))}
                       </motion.div>
@@ -332,24 +338,24 @@ const AlertsScreen = ({ theme, t }) => {
                       setShowPaymentDropdown(!showPaymentDropdown);
                       setShowExchangeDropdown(false);
                     }}
-                    className="w-full flex items-center justify-between p-3 rounded-xl border border-border bg-surface"
+                    className="w-full flex items-center justify-between p-4 rounded-2xl border border-border bg-surface shadow-sm active:scale-[0.99] transition-transform"
                   >
-                    <span className="text-xs text-gray-500 font-medium">{t('alerts.payment_label')}:</span>
+                    <span className="text-xs text-text-secondary font-bold uppercase tracking-wider">{t('alerts.payment_label')}</span>
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-text">
                         {paymentMethod === 'Any' ? t('alerts.any_payment') : paymentMethod}
                       </span>
-                      <ChevronDown size={16} className={`text-gray-500 transition-transform duration-300 ${showPaymentDropdown ? 'rotate-180' : ''}`} />
+                      <ChevronDown size={18} className={`text-text-secondary transition-transform duration-300 ${showPaymentDropdown ? 'rotate-180' : ''}`} />
                     </div>
                   </button>
 
                   <AnimatePresence>
                     {showPaymentDropdown && (
                       <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-xl overflow-hidden z-20 shadow-xl max-h-[160px] overflow-y-auto"
+                        initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        className="absolute top-full left-0 right-0 mt-2 bg-surface/95 backdrop-blur-xl border border-border rounded-2xl overflow-hidden z-20 shadow-2xl max-h-[240px] overflow-y-auto origin-top"
                       >
                         {PAYMENT_METHODS.map((pm) => (
                           <button
@@ -359,10 +365,10 @@ const AlertsScreen = ({ theme, t }) => {
                               setShowPaymentDropdown(false);
                               hapticFeedback('selection');
                             }}
-                            className="w-full flex items-center justify-between p-3 hover:bg-gray-100 dark:hover:bg-white/5 transition-colors border-b border-border last:border-0"
+                            className="w-full flex items-center justify-between p-4 hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-border/50 last:border-0"
                           >
-                            <span className="font-medium text-sm text-text">{pm === 'Any' ? t('alerts.any_payment') : pm}</span>
-                            {paymentMethod === pm && <Check size={14} className="text-[#FCD535]" />}
+                            <span className="font-bold text-sm text-text">{pm === 'Any' ? t('alerts.any_payment') : pm}</span>
+                            {paymentMethod === pm && <Check size={16} className="text-shark-cyan" strokeWidth={3} />}
                           </button>
                         ))}
                       </motion.div>
@@ -371,38 +377,40 @@ const AlertsScreen = ({ theme, t }) => {
                 </div>
 
                 {/* Inputs Row */}
-                <div className="flex gap-3">
+                <div className="flex gap-4">
                   <div className="flex-1">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 block ml-1">{t('alerts.min_amount')}</label>
                     <input 
                       type="number" 
                       value={minAmount}
                       onChange={(e) => setMinAmount(e.target.value)}
-                      placeholder={t('alerts.min_amount')}
-                      className="w-full bg-surface border border-border rounded-xl px-3 py-3 text-sm text-text focus:border-[#FCD535] focus:outline-none placeholder:text-gray-500"
+                      placeholder="0"
+                      className="w-full bg-surface border border-border rounded-2xl px-4 py-3.5 text-base font-bold text-text focus:border-shark-cyan focus:ring-1 focus:ring-shark-cyan focus:outline-none placeholder:text-gray-400/50 shadow-sm transition-all"
                     />
                   </div>
                   <div className="flex-1">
+                    <label className="text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 block ml-1">{t('alerts.price_target')}</label>
                     <input 
                       type="number" 
                       value={price}
                       onChange={(e) => setPrice(e.target.value)}
-                      placeholder={t('alerts.price_target')}
-                      className="w-full bg-surface border border-border rounded-xl px-3 py-3 text-sm text-text focus:border-[#FCD535] focus:outline-none placeholder:text-gray-500"
+                      placeholder="0.00"
+                      className="w-full bg-surface border border-border rounded-2xl px-4 py-3.5 text-base font-bold text-text focus:border-shark-cyan focus:ring-1 focus:ring-shark-cyan focus:outline-none placeholder:text-gray-400/50 shadow-sm transition-all"
                     />
                   </div>
                 </div>
 
                 {/* Recurring Toggle */}
-                <div className="flex justify-between items-center py-1">
+                <div className="flex justify-between items-center py-2 px-1">
                    <div className="flex items-center gap-2">
-                     <span className="text-xs text-text font-medium">{t('alerts.recurring')}</span>
-                     <Info size={12} className="text-gray-500" />
+                     <span className="text-sm font-bold text-text">{t('alerts.recurring')}</span>
+                     <Info size={14} className="text-text-secondary" />
                    </div>
                    <button 
                      onClick={() => setIsRecurring(!isRecurring)}
-                     className={`w-10 h-5 rounded-full p-0.5 transition-colors ${isRecurring ? 'bg-[#FCD535]' : 'bg-gray-200 dark:bg-white/10'}`}
+                     className={`w-12 h-7 rounded-full p-1 transition-colors duration-300 ${isRecurring ? 'bg-shark-cyan' : 'bg-gray-200 dark:bg-white/10'}`}
                    >
-                     <div className={`w-4 h-4 rounded-full bg-white transition-transform ${isRecurring ? 'translate-x-5' : 'translate-x-0'}`} />
+                     <div className={`w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-300 ${isRecurring ? 'translate-x-5' : 'translate-x-0'}`} />
                    </button>
                 </div>
 
@@ -410,7 +418,7 @@ const AlertsScreen = ({ theme, t }) => {
                 <button 
                   onClick={handleCreateAlert}
                   disabled={!price}
-                  className="w-full py-3 bg-[#FCD535] text-black font-bold rounded-xl text-base hover:bg-[#e0bc2e] transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-2 shadow-lg shadow-[#FCD535]/20"
+                  className="w-full py-4 bg-shark-cyan text-black font-black rounded-2xl text-lg hover:bg-[#00D060] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-4 shadow-lg shadow-shark-cyan/20 active:scale-[0.98]"
                 >
                   {t('alerts.create')}
                 </button>

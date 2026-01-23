@@ -2,8 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { BadgeCheck, ShieldCheck, ExternalLink } from 'lucide-react';
 import { openLink } from '../utils/telegram';
+import clsx from 'clsx';
 
-const OrderCard = ({ order, onClick, t }) => {
+const OrderCard = ({ order, onClick, t, theme }) => {
   const { merchant, price, limit, crypto, available, paymentMethods, exchange, type } = order;
 
   const getBankColor = (method) => {

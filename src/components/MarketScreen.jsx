@@ -252,14 +252,18 @@ const MarketScreen = ({ theme, t }) => {
              )}
            </div>
 
-           {/* Payment Method Button */}
+           {/* Payment Filter Button */}
            <div className="relative">
              <button 
                onClick={() => { setShowPaymentModal(!showPaymentModal); setShowAmountModal(false); hapticFeedback('light'); }}
-               className={`text-xs font-medium px-3 py-1.5 rounded-full transition-colors border flex items-center gap-1 whitespace-nowrap ${filterPayment ? 'text-shark-cyan bg-shark-cyan/10 border-shark-cyan/50' : 'text-gray-500 dark:text-gray-300 border-border bg-surface'}`}
+               className={`text-xs font-bold px-4 py-2 rounded-xl transition-all border flex items-center gap-2 whitespace-nowrap shadow-sm active:scale-95 ${
+                 filterPayment 
+                   ? 'text-shark-cyan bg-shark-cyan/10 border-shark-cyan/30 shadow-[0_0_15px_-5px_rgba(0,229,106,0.3)]' 
+                   : 'text-text-secondary bg-surface border-border hover:border-text-secondary/50'
+               }`}
              >
-               {filterPayment || t('market.payment_method')}
-               <ChevronDown size={12} />
+               {filterPayment || t('market.payment')}
+               <ChevronDown size={14} />
              </button>
 
              {/* Payment Dropdown */}
@@ -267,34 +271,25 @@ const MarketScreen = ({ theme, t }) => {
                <>
                  <div className="fixed inset-0 z-30" onClick={() => setShowPaymentModal(false)} />
                  <motion.div 
-                   initial={{ opacity: 0, y: 10 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   className="absolute top-full mt-2 left-0 z-40 bg-surface border border-border rounded-xl p-2 shadow-xl min-w-[200px]"
+                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                   animate={{ opacity: 1, y: 0, scale: 1 }}
+                   className="absolute top-full mt-2 left-0 z-50 bg-surface/90 border border-white/10 rounded-2xl p-2 shadow-2xl min-w-[200px] max-h-[300px] overflow-y-auto backdrop-blur-xl no-scrollbar ring-1 ring-white/5"
                  >
-                   <div className="text-xs text-gray-500 dark:text-gray-400 m-2 font-bold uppercase">{t('market.choose_bank_title')}</div>
-                   <div className="max-h-[200px] overflow-y-auto space-y-1">
-                     {BANK_LIST.map(bank => (
-                       <button
-                         key={bank}
-                         onClick={() => {
-                           setFilterPayment(filterPayment === bank ? null : bank);
-                           setShowPaymentModal(false);
-                           hapticFeedback('medium');
-                         }}
-                         className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${filterPayment === bank ? 'bg-shark-cyan/20 text-shark-cyan' : 'text-gray-500 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5'}`}
-                       >
-                         {bank}
-                       </button>
-                     ))}
-                   </div>
-                   {filterPayment && (
-                     <button 
-                        onClick={() => { setFilterPayment(null); setShowPaymentModal(false); }}
-                        className="w-full mt-2 py-2 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-text border-t border-border"
+                   <button
+                     onClick={() => { setFilterPayment(null); setShowPaymentModal(false); hapticFeedback('medium'); }}
+                     className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all mb-1 ${!filterPayment ? 'bg-white/10 text-white' : 'text-text-secondary hover:bg-white/5'}`}
+                   >
+                     {t('alerts.any_payment')}
+                   </button>
+                   {BANK_LIST.map(bank => (
+                     <button
+                       key={bank}
+                       onClick={() => { setFilterPayment(bank); setShowPaymentModal(false); hapticFeedback('medium'); }}
+                       className={`w-full text-left px-4 py-3 rounded-xl text-sm font-bold transition-all mb-1 ${filterPayment === bank ? 'bg-shark-cyan/20 text-shark-cyan' : 'text-text-secondary hover:bg-white/5'}`}
                      >
-                       {t('market.reset_filter')}
+                       {bank}
                      </button>
-                   )}
+                   ))}
                  </motion.div>
                </>
              )}
@@ -339,8 +334,11 @@ const MarketScreen = ({ theme, t }) => {
           )}
         </div>
 
-        <button onClick={handleRefresh} className="text-gray-500 dark:text-gray-300 p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 active:rotate-180 transition-all duration-500">
-           <RefreshCw size={18} />
+        <button 
+          onClick={handleRefresh} 
+          className="p-2 rounded-full bg-surface border border-border text-text-secondary hover:text-shark-cyan hover:border-shark-cyan/50 transition-all active:rotate-180 shadow-sm"
+        >
+          <RefreshCw size={20} />
         </button>
       </div>
 

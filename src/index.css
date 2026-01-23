@@ -4,22 +4,96 @@
 
 @layer base {
   :root {
-    --background: #F2F2F7;
-    --surface: #FFFFFF;
-    --text: #000000;
-    --border: #E5E5EA;
-    --shark-cyan: #22c55e;
+    /* Base - Light Mode (Clean, Modern, Apple-like) */
+    --background: 210 20% 98%;      /* #F5F7FA */
+    --surface: 0 0% 100%;           /* #FFFFFF */
+    --text: 220 15% 10%;            /* #151922 */
+    --text-secondary: 220 10% 45%;  /* #666D7D */
+    
+    /* Accents */
+    --primary: 215 100% 50%;        /* #0066FF (Vibrant Blue) */
+    --primary-foreground: 0 0% 100%;
+    
+    /* Status */
+    --success: 150 100% 38%;        /* #00C261 */
+    --error: 350 90% 60%;           /* #FF3B5C */
+    --warning: 45 100% 50%;         /* #FFCC00 */
+    
+    /* UI Elements */
+    --border: 220 15% 90%;          /* #E2E6ED */
+    --input: 220 15% 94%;           /* #EEF1F6 */
+    --ring: 215 100% 50%;
+    --radius: 1rem;                 /* 16px - More rounded */
   }
-
+ 
   .dark {
-    --background: #000000;
-    --surface: #1A1A1D;
-    --text: #FFFFFF;
-    --border: rgba(255, 255, 255, 0.1);
-    --shark-cyan: #22c55e;
-  }
+    /* Base - Dark Mode (Deep, OLED, Cyberpunk-lite) */
+    --background: 224 71% 4%;       /* #030712 (Rich Black) */
+    --surface: 224 71% 7%;          /* #050A19 (Slightly lighter) */
+    --text: 210 40% 98%;            /* #F0F4F8 */
+    --text-secondary: 215 20% 65%;  /* #94A3B8 */
 
+    /* Accents */
+    --primary: 160 84% 39%;         /* #10B981 (Emerald) -> Changed to Neo-Green below */
+    --primary-foreground: 0 0% 100%;
+    
+    /* Shark Custom Accents (Neo-Brutalism/Crypto) */
+    --shark-cyan: 150 100% 45%;     /* #00E56A (Neon Green) */
+    
+    /* UI Elements */
+    --border: 215 20% 15%;          /* #1E293B */
+    --input: 215 20% 15%;
+    --ring: 150 100% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-none;
+  }
   body {
-    @apply bg-background text-text font-sans antialiased transition-colors duration-300;
+    @apply bg-background text-text font-sans antialiased selection:bg-shark-cyan/30 selection:text-shark-cyan;
+    font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-surface/70 backdrop-blur-xl border border-white/10 dark:border-white/5;
+  }
+  .glass-card {
+    @apply bg-white/80 dark:bg-gray-900/60 backdrop-blur-md border border-gray-200/50 dark:border-white/5 shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  .text-glow {
+    text-shadow: 0 0 10px rgba(var(--shark-cyan), 0.5);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(156, 163, 175, 0.3);
+    border-radius: 20px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 163, 175, 0.5);
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+  }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.25);
   }
 }

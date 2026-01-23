@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import MarketScreen from './components/MarketScreen';
 import AlertsScreen from './components/AlertsScreen';
 import SettingsScreen from './components/SettingsScreen';
@@ -17,10 +17,27 @@ function App() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [toastNotifications, setToastNotifications] = useState([]);
   const [adminClicks, setAdminClicks] = useState(0);
+  const adminClickTimeout = useRef(null);
 
   useEffect(() => {
     // Initial theme setup
     document.documentElement.classList.add('dark');
+
+    // Register User with Backend
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      
+      const user = tg.initDataUnsafe?.user;
+      if (user) {
+        fetch('/api/user/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user })
+        }).catch(err => console.error('Failed to register user:', err));
+      }
+    }
   }, []);
 
   // Monitoring Effect
@@ -99,6 +116,14 @@ function App() {
   };
 
   const handleAdminTrigger = () => {
+    // Reset counter if too much time passes (1s window between clicks)
+    if (adminClickTimeout.current) {
+      clearTimeout(adminClickTimeout.current);
+    }
+    adminClickTimeout.current = setTimeout(() => {
+      setAdminClicks(0);
+    }, 1000);
+
     setAdminClicks(prev => {
       if (prev + 1 >= 5) {
         setActiveTab('Admin');
@@ -139,21 +164,29 @@ function App() {
   };
 
   return (
-    <div className={`min-h-screen bg-background text-text pb-24 ${theme}`}>
-      <Notification 
-        notifications={toastNotifications} 
-        removeNotification={removeNotification}
-        onOpenAlert={handleOpenAlert}
-      />
-      {renderScreen()}
-      {activeTab !== 'Admin' && (
-        <Navigation 
-          activeTab={activeTab} 
-          onTabChange={setActiveTab} 
-          t={t}
-          onLogoClick={handleAdminTrigger}
+    <div className={`min-h-screen bg-background text-text pb-24 ${theme} font-sans selection:bg-shark-cyan/30`}>
+      {/* Global Background Effect */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-shark-cyan/5 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
+      </div>
+
+      <div className="relative z-10">
+        <Notification 
+          notifications={toastNotifications} 
+          removeNotification={removeNotification}
+          onOpenAlert={handleOpenAlert}
         />
-      )}
+        {renderScreen()}
+        {activeTab !== 'Admin' && (
+          <Navigation 
+            activeTab={activeTab} 
+            onTabChange={setActiveTab} 
+            t={t}
+            onLogoClick={handleAdminTrigger}
+          />
+        )}
+      </div>
     </div>
   );
 }

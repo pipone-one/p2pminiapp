@@ -164,13 +164,15 @@ export class Monitor {
     // Send Telegram Notification
     if (this.bot && alert.chatId) {
       const emoji = alert.type === 'buy' ? '🟢' : '🔴';
+      const action = alert.type === 'buy' ? 'Buy' : 'Sell';
       const text = `${emoji} *Price Alert Triggered!*\n\n` +
                    `Exchange: ${alert.exchange}\n` +
-                   `Pair: ${alert.crypto}/UAH\n` +
-                   `Target: ${alert.price}\n` +
-                   `Current: *${order.price}*\n` +
-                   `Merchant: ${order.merchant}\n\n` +
-                   `[Open Mini App](https://t.me/YOUR_BOT_USERNAME/app)`;
+                   `Action: ${action} ${alert.crypto}\n` +
+                   `Target Price: ${alert.price}\n` +
+                   `Found Price: *${order.price}*\n` +
+                   `Merchant: ${order.merchant}\n` +
+                   `Link: ${order.paymentMethods.join(', ')}\n\n` +
+                   `👉 Check app for details!`;
       
       this.bot.sendMessage(alert.chatId, text, { parse_mode: 'Markdown' })
         .catch(e => console.error(`Failed to send TG message to ${alert.chatId}:`, e.message));

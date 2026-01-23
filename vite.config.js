@@ -51,6 +51,11 @@ export default defineConfig({
           'Origin': 'https://p2p.mexc.com',
           'Referer': 'https://p2p.mexc.com/'
         }
+      },
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false
       }
     }
   }
